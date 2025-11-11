@@ -94,7 +94,7 @@ app.post('/api/posts', (request, response, next) => {
 // 라우트 그룹
 // --------------------
 // 라우트를 모듈로 나누고 그룹핑하여 관리하는 방법
-app.use(authRouter); // authRouter 모듈을 app에 등록
+app.use('/api', authRouter); // authRouter 모듈을 app에 등록
 // app.use('/api/users',  usersRouter ); // usersRouter 모듈을 app에 등록
 app.use('/api/users', eduUsersTest, usersRouter, eduTest); // usersRouter 모듈을 app에 등록
  // '/api/users' 경로로 들어오는 요청은 usersRouter가 처리
