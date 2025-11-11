@@ -1,4 +1,3 @@
-import express from "express";
 import { validationResult } from "express-validator";
 
 export default function validatorHandler(request, response, next) {
@@ -11,4 +10,4 @@ export default function validatorHandler(request, response, next) {
   }
    
   next();
-  }
+}

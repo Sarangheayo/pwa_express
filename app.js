@@ -95,12 +95,13 @@ app.post('/api/posts', (request, response, next) => {
 // --------------------
 // 라우트를 모듈로 나누고 그룹핑하여 관리하는 방법
 app.use('/api', authRouter); // authRouter 모듈을 app에 등록
-// app.use('/api/users',  usersRouter ); // usersRouter 모듈을 app에 등록
-app.use('/api/users', eduUsersTest, usersRouter, eduTest); // usersRouter 모듈을 app에 등록
+app.use('/api/users', eduUsersTest, usersRouter); 
+ // usersRouter 모듈을 app에 등록
  // '/api/users' 경로로 들어오는 요청은 usersRouter가 처리
  // 라우터 뒤에 미들웨어도 추가 가능
  // 라우터 앞에도 미들웨어 추가 가능 
 
+ 
 // 대체 라우트(모든 라우터 중에 가장 마지막에 작성)
 // 정의되지 않은 경로에 대한 요청이 들어왔을 때 실행되는 Router
 app.use((request, response, next) => {
@@ -111,6 +112,8 @@ app.use((request, response, next) => {
 });
 
 // 서버를 주어진 포트에서 시작
-app.listen(3000, () => {
-  console.log('3000포트에서 리스닝');
-});
+// app.listen(3000, () => {
+//   console.log('3000포트에서 리스닝 중...');
+// });
+
+app.listen(3000);
