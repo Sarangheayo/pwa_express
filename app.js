@@ -2,6 +2,7 @@ import express from 'express'; // express module 가져오기
 import authRouter from './routes/auth.router.js'; // authRouter 모듈 가져오기
 import usersRouter from './routes/users.router.js'; // usersRouter 모듈 가져오기
 import { eduTest, eduUsersTest } from './app/middelwares/edu/edu.middleware.js';
+import { errorHandler } from './app/middelwares/errors/error-handler.js';
 
 const app = express(); // express 앱 생성
 app.use(express.json()); // JSON으로 요청이 올 경우 파싱 처리 
@@ -101,7 +102,19 @@ app.use('/api/users', eduUsersTest, usersRouter);
  // 라우터 뒤에 미들웨어도 추가 가능
  // 라우터 앞에도 미들웨어 추가 가능 
 
- 
+
+// 에러 테스트용 라우트
+app.get('/error', (request, response, next) => {
+  // throw를 이용하여 에러 핸들링 처리도 가능 
+  // throw new Error('Throw로 예외 발생');
+  // next(new Error('Next로 예외 발생'));
+
+  // 비동기 처리 내부에서는 꼭! next(error)를 이용하여 에러 핸들링 처리해야 함
+  setTimeout(() => {
+  next(new Error('Next로 예외 발생'));
+  }, 1000);
+}); 
+
 // 대체 라우트(모든 라우터 중에 가장 마지막에 작성)
 // 정의되지 않은 경로에 대한 요청이 들어왔을 때 실행되는 Router
 app.use((request, response, next) => {
@@ -116,4 +129,13 @@ app.use((request, response, next) => {
 //   console.log('3000포트에서 리스닝 중...');
 // });
 
+
+// 에러 처리 미들웨어 등록 
+// =========================
+// Error Handler 등록(중앙 관리화)
+// =========================
+app.use(errorHandler);
+
+
+// 서버를 주어진 포트에서 시작
 app.listen(3000);
