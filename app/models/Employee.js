@@ -126,8 +126,6 @@ const options = {
 
 // Employee.destroy(11)
 
-
-
 // model 객체 작성
 const Employee = {
   init: (sequelize) => {
