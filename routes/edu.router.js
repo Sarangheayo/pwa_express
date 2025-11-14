@@ -1,7 +1,7 @@
 import express, { request, response } from 'express';
 import db from '../app/models/index.js'
-import { Op } from 'sequelize';
-const { sequelize, Employee } = db; 
+import { Association, Op } from 'sequelize';
+const { sequelize, Employee, TitleEmp, Title } = db; 
 import dayjs from 'dayjs';
 
 const eduRouter = express.Router();
@@ -122,24 +122,24 @@ try {
 
 
   // 이름이 '강가람'이고, 성별이 여자인 사원 정보 조회
-  result = await Employee.findAll({
-    attributes: ['empId', 'name', 'gender'],
-    where: {
-      name: '강가람', 
-      gender: 'F',
-    }
-  });
+  // result = await Employee.findAll({
+  //   attributes: ['empId', 'name', 'gender'],
+  //   where: {
+  //     name: '강가람', 
+  //     gender: 'F',
+  //   }
+  // });
 
-  // 이름이 '강가람' 또는 '신서연'인 사원 조회
-   result = await Employee.findAll({
-    attributes: ['empId', 'name', 'gender'],
-    where: {
-      [Op.or]: [
-        { name: '강가람' },
-        { name: '신서연' }
-      ], 
-    }
-   });
+  // // 이름이 '강가람' 또는 '신서연'인 사원 조회
+  //  result = await Employee.findAll({
+  //   attributes: ['empId', 'name', 'gender'],
+  //   where: {
+  //     [Op.or]: [
+  //       { name: '강가람' },
+  //       { name: '신서연' }
+  //     ], 
+  //   }
+  //  });
 
    // 이름이 '강가람' 또는 '신서연'이면서 성별이 'F'인 사원 조회
     //  result = await Employee.findAll({
@@ -199,22 +199,95 @@ try {
 
     // GROUP BY, having
     // DB에 있는 카운트 함수 호출해야 함 
-   result = await Employee.findAll({
-    attributes: [
-    'gender',                                                      // GROUP BY 기준 컬럼
-    [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender'],     // COUNT(*) AS cnt_gender
-  ],
-  group: ['gender'],
-  having: sequelize.literal('cnt_gender <= 40000'),
-});
+//    result = await Employee.findAll({
+//     attributes: [
+//     'gender',                                                      // GROUP BY 기준 컬럼
+//     [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender'],     // COUNT(*) AS cnt_gender
+//   ],
+//   group: ['gender'],
+//   having: sequelize.literal('cnt_gender <= 40000'),
+// });
 
-  return response.status(200).send({
-    msg: '정상처리',
-    data: result  
-  }); 
- } catch(error) {
-  next(error);
- }
+  // 좋아요. 기사테이블도 기능도 1:多 일 것임. 내가 혼자서 담당하고 중복, 다양한 것을 관리하는 형식 -> 게시글 조회수 그런 것들  
+  // join
+  //  result = await Employee.findOne({
+  //   attributes: ['empId', 'name'],
+  //   where: {
+  //     empId: 1
+  //   },
+  //   include: [
+  //     {
+  //       model: TitleEmp, // 내가 연결할 모델
+  //       as: 'titleEmps', // Employee에서 정한 alias 가져오기 // 내가 사용할 관계
+  //       required: true, // true 면 Inner join, false 면 Left Outer join
+  //       attributes: ['titleCode'],
+  //       where: {
+  //         endAt: {
+  //           [Op.is]: null,
+  //         }
+  //       }
+  //     }
+  //   ],
+  //  })
+
+  // result = await Title.findAll({
+  //   attributes: ['titleCode'],
+  //   where: {
+  //     titleCode: 'T001'
+  //   },
+  //   include: [
+  //     {
+  //       model: TitleEmp, // 내가 연결할 모델
+  //       as: 'titleEmps', // title에서 정한 alias 가져오기 // 내가 사용할 관계
+  //       required: true, // true 면 Inner join, false 면 Left Outer join
+  //       attributes: ['titleCode'],
+  //       where: {
+  //         deletedAt: {
+  //           [Op.is]: null,
+  //         }
+  //       }
+  //     }
+  //   ],
+  // });
+
+ // join
+   result = await Employee.findOne({
+    attributes: ['empId', 'name'], // 항상 pk는 출력되도록 attributes는 냅두기.
+    where: {
+      empId: 1
+    },
+    include: [
+      {
+        // model: TitleEmp, // 내가 연결할 모델
+        // as: 'titleEmps', // Employee에서 정한 alias 가져오기 // 내가 사용할 관계
+        association: 'titleEmps',
+        required: true, // true 면 Inner join, false 면 Left Outer join
+        attributes: ['titleCode'], 
+        where: {
+          endAt: {
+            [Op.is]: null,
+          }
+        },
+        include: [
+          {
+            association: 'title', 
+            // model: Title,
+            // as: 'title', // // 내가 연결할 모델 titleEmps에 속해 있는 것에 작업해야 함 
+            required: true,
+            attributes: ['title'],
+          }  
+        ]
+      }
+    ]
+})
+    return response.status(200).send({
+      msg: '정상처리',
+      data: result  
+    }); 
+  } catch(error) {
+    next(error);
+  }
 });
 
 export default eduRouter;
+

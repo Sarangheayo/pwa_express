@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize';
 import Employee from './Employee.js';
+import TitleEmp from './TitleEmp.js';
+import Title from './Title.js';
 
 const db = {}; // 생성할 db 인스턴스 저장
 
@@ -32,8 +34,13 @@ db.sequelize = sequelize; // 생성한 sequelize 인스턴스를 db에 저장
 
 // model 초기화
 db.Employee = Employee.init(sequelize);
+db.TitleEmp = TitleEmp.init(sequelize);
+db.Title = Title.init(sequelize);
 
 // model 관계 설정
+Employee.associate(db);
+TitleEmp.assoicate(db);
+Title.associate(db)
 
 
 // db 내보내기
