@@ -1,6 +1,4 @@
 import { DataTypes } from "sequelize";
-import { defaultValueSchemable } from "sequelize/lib/utils";
-
 
 // 모델명
 const modelName = 'TitleEmp';
